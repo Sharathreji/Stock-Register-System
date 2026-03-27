@@ -88,7 +88,6 @@ th, td {
 
 <div class="container">
 
-<!-- ENTRY -->
 <div class="card">
 <h3>Add Stock</h3>
 
@@ -117,7 +116,6 @@ th, td {
 <button class="btn primary" onclick="addStock()">Add Item</button>
 </div>
 
-<!-- REPORT -->
 <div class="card">
 <h3>Stock Report</h3>
 
@@ -142,9 +140,7 @@ function saveData(){
     localStorage.setItem("stockData", JSON.stringify(stock));
 }
 
-// ADD
 function addStock(){
-
     let item = {
         id: Date.now(),
         name: itemName.value,
@@ -171,7 +167,6 @@ function addStock(){
     loadReport();
 }
 
-// REPORT TABLE
 function loadReport(){
 
     let filter = filterDept.value;
@@ -207,24 +202,18 @@ function loadReport(){
     });
 }
 
-// DELETE PASSWORD
 function deleteItem(id){
-
     let pass = prompt("Enter password:");
-
     if(pass !== "6napcdb88"){
         alert("Wrong password");
         return;
     }
-
     stock = stock.filter(s=>s.id!==id);
     saveData();
     loadReport();
 }
 
-// DEPARTMENTS
 function updateDepartments(){
-
     let select = document.getElementById("filterDept");
     let depts = [...new Set(stock.map(s=>s.dept))];
 
@@ -238,7 +227,6 @@ function updateDepartments(){
     });
 }
 
-// PDF TABLE (FULL PAGE)
 async function generatePDF(){
 
     if(stock.length===0){
@@ -247,8 +235,6 @@ async function generatePDF(){
     }
 
     const { jsPDF } = window.jspdf;
-
-    // LANDSCAPE
     const doc = new jsPDF("l", "mm", "a4");
 
     let img = new Image();
@@ -256,71 +242,93 @@ async function generatePDF(){
 
     img.onload = function(){
 
-        let y = 40;
+        const pageWidth = 297;
+        const margin = 10;
+        const usableWidth = pageWidth - margin * 2;
+
+        let y = 45;
 
         function drawHeader(){
             doc.addImage(img, "JPEG", 10, 5, 277, 30);
-
-            doc.setFontSize(14);
+            doc.setFontSize(12);
             doc.text("Stock Report - JMP Medical Centre", 10, 40);
         }
 
         drawHeader();
 
-        y = 50;
-
+        // Balanced column widths (fits A4 perfectly)
+        const colWidths = [45, 30, 30, 30, 35, 35, 15, 25];
         const headers = ["Item","Dept","Category","Type","Serial","Warranty","Qty","Date"];
-        const colWidths = [50,40,40,40,40,40,20,30];
 
-        function drawRow(row,yPos){
-            let x=10;
-            row.forEach((cell,i)=>{
-                doc.rect(x,yPos,colWidths[i],8);
-                doc.text(String(cell), x+2, yPos+5);
-                x+=colWidths[i];
-            });
+        function splitText(text, width){
+            return doc.splitTextToSize(String(text), width - 2);
         }
 
-        doc.setFont(undefined,"bold");
-        drawRow(headers,y);
-        doc.setFont(undefined,"normal");
+        function drawRow(row, yPos){
 
-        y+=8;
+            let x = margin;
+            let maxHeight = 0;
 
-        stock.forEach((s)=>{
+            let cellTexts = row.map((cell, i) => {
+                let lines = splitText(cell, colWidths[i]);
+                maxHeight = Math.max(maxHeight, lines.length * 5);
+                return lines;
+            });
 
-            let row=[
+            cellTexts.forEach((lines, i) => {
+                doc.rect(x, yPos, colWidths[i], maxHeight + 4);
+
+                lines.forEach((line, j) => {
+                    doc.text(line, x + 2, yPos + 4 + j * 5);
+                });
+
+                x += colWidths[i];
+            });
+
+            return maxHeight + 4;
+        }
+
+        doc.setFont(undefined, "bold");
+        let rowHeight = drawRow(headers, y);
+        doc.setFont(undefined, "normal");
+
+        y += rowHeight;
+
+        stock.forEach(s => {
+
+            let row = [
                 s.name,
                 s.dept,
                 s.category,
                 s.type,
-                s.serial||"-",
-                s.warranty||"-",
+                s.serial || "-",
+                s.warranty || "-",
                 s.qty,
-                s.date||"-"
+                s.date || "-"
             ];
 
-            if(y>180){
+            let neededHeight = drawRow(row, y);
+
+            if(y + neededHeight > 200){
                 doc.addPage();
                 drawHeader();
-                y=50;
+                y = 45;
 
-                doc.setFont(undefined,"bold");
-                drawRow(headers,y);
-                doc.setFont(undefined,"normal");
+                doc.setFont(undefined, "bold");
+                drawRow(headers, y);
+                doc.setFont(undefined, "normal");
 
-                y+=8;
+                y += 10;
+                neededHeight = drawRow(row, y);
             }
 
-            drawRow(row,y);
-            y+=8;
+            y += neededHeight;
         });
 
         doc.save("JMP_Stock_Report.pdf");
     }
 }
 
-// INIT
 updateDepartments();
 loadReport();
 

@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>JMP Medical Centre - Stock Register-System</title>
+<title>JMP Medical Centre - Stock System</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -23,18 +22,13 @@ body {
     color: white;
     padding: 12px;
 }
-
 .header-content {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
-    flex-wrap: wrap;
 }
-
-.logo {
-    height: 55px;
-}
+.logo { height: 55px; }
 
 /* LAYOUT */
 .container { padding: 15px; }
@@ -76,8 +70,8 @@ button {
 
 /* TABLE */
 .table-wrapper {
-    overflow-y: auto;
     max-height: 400px;
+    overflow: auto;
 }
 
 table {
@@ -97,12 +91,12 @@ th, td {
     border: 1px solid #ddd;
     text-align: center;
 }
-
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
     <div class="header-content">
         <img src="images/logo.png" class="logo">
@@ -115,6 +109,7 @@ th, td {
 
 <div class="container">
 
+<!-- ADD -->
 <div class="card">
 <h3>Add Stock</h3>
 
@@ -125,6 +120,7 @@ th, td {
 <option>Consumable</option>
 <option>Electronics</option>
 <option>Utility</option>
+<option>Furniture</option>
 </select>
 
 <select id="type">
@@ -142,12 +138,14 @@ th, td {
 <button class="primary" onclick="addStock()">Add</button>
 </div>
 
+<!-- REPORT -->
 <div class="card">
-<h3>Report</h3>
+<h3>Stock Report</h3>
 
 <select id="filterDept"></select>
+
 <button class="success" onclick="loadReport()">Generate</button>
-<button class="warning" onclick="generatePDF()">PDF</button>
+<button class="warning" onclick="generatePDF()">Download PDF</button>
 
 <div class="table-wrapper">
 <table id="table"></table>
@@ -194,12 +192,13 @@ function addStock(){
     loadReport();
 }
 
-// DEPT
+// DEPARTMENT LIST
 function updateDepartments(){
     let select = document.getElementById("filterDept");
     let depts = [...new Set(stock.map(s=>s.dept))];
 
-    select.innerHTML = `<option value="All">All</option>`;
+    select.innerHTML = `<option value="All">All Departments</option>`;
+
     depts.forEach(d=>{
         let opt=document.createElement("option");
         opt.value=d;
@@ -218,7 +217,7 @@ function loadReport(){
     <tr>
     <th>Item</th><th>Dept</th><th>Category</th>
     <th>Type</th><th>Serial</th><th>Warranty</th>
-    <th>Qty</th><th>Date</th><th>Del</th>
+    <th>Qty</th><th>Date</th><th>Delete</th>
     </tr>`;
 
     let filtered = stock.filter(s => filter==="All" || s.dept===filter);
@@ -263,9 +262,9 @@ function loadReport(){
 
 // DELETE
 function deleteItem(id){
-    let pass = prompt("Password:");
+    let pass = prompt("Enter password:");
     if(pass !== "6napcdb88"){
-        alert("Wrong");
+        alert("Wrong password");
         return;
     }
     stock = stock.filter(s=>s.id!==id);
@@ -273,11 +272,11 @@ function deleteItem(id){
     loadReport();
 }
 
-// PDF PORTRAIT
+// PDF LANDSCAPE
 async function generatePDF(){
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("p", "mm", "a4");
+    const doc = new jsPDF("l", "mm", "a4");
 
     let filter = filterDept.value;
     let data = stock.filter(s => filter==="All" || s.dept===filter);
@@ -295,15 +294,25 @@ async function generatePDF(){
         let y = 45;
 
         function header(){
-            doc.addImage(img,"JPEG",10,5,190,30);
-            doc.setFontSize(11);
-            doc.text("Stock Report",10,40);
+            doc.addImage(img,"JPEG",10,5,277,30);
+            doc.setFontSize(12);
+            doc.text("Stock Report - JMP Medical Centre",10,40);
         }
 
         header();
 
-        const headers = ["Item","Dept","Cat","Type","Qty"];
-        const colWidths = [60,35,25,25,15];
+        doc.setFontSize(9);
+
+        const headers = [
+            "Item","Department","Category","Type",
+            "Serial","Warranty","Qty","Date"
+        ];
+
+        const colWidths = [70,40,35,30,45,35,20,30];
+
+        function splitText(t,w){
+            return doc.splitTextToSize(String(t||"-"), w-2);
+        }
 
         function drawRow(row,yPos){
 
@@ -311,20 +320,20 @@ async function generatePDF(){
             let maxH=0;
 
             let lines=row.map((c,i)=>{
-                let l=doc.splitTextToSize(String(c),colWidths[i]-2);
-                maxH=Math.max(maxH,l.length*4);
+                let l=splitText(c,colWidths[i]);
+                maxH=Math.max(maxH,l.length*5);
                 return l;
             });
 
             lines.forEach((cell,i)=>{
-                doc.rect(x,yPos,colWidths[i],maxH+3);
+                doc.rect(x,yPos,colWidths[i],maxH+4);
                 cell.forEach((line,j)=>{
-                    doc.text(line,x+2,yPos+3+j*4);
+                    doc.text(line,x+2,yPos+4+j*5);
                 });
                 x+=colWidths[i];
             });
 
-            return maxH+3;
+            return maxH+4;
         }
 
         doc.setFont(undefined,"bold");
@@ -334,22 +343,30 @@ async function generatePDF(){
 
         data.forEach(s=>{
 
-            let row=[s.name,s.dept,s.category,s.type,s.qty];
+            let row=[
+                s.name,s.dept,s.category,s.type,
+                s.serial,s.warranty,s.qty,s.date
+            ];
 
             let h=drawRow(row,y);
 
-            if(y+h>270){
+            if(y+h>190){
                 doc.addPage();
                 header();
                 y=45;
+
+                doc.setFont(undefined,"bold");
                 drawRow(headers,y);
+                doc.setFont(undefined,"normal");
+
                 y+=10;
+                h=drawRow(row,y);
             }
 
             y+=h;
         });
 
-        doc.save("Stock_Report.pdf");
+        doc.save("JMP_Stock_Report.pdf");
     }
 }
 

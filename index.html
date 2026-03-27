@@ -2,251 +2,318 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Happy Anniversary Kavya CJ ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<title>JMP Medical Centre - Stock System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-  font-family:'Poppins',sans-serif;
-  margin:0;
-  padding:0;
-  background:radial-gradient(circle at top,#ff9a9e,#fad0c4,#fad0c4);
-  text-align:center;
-  overflow-x:hidden;
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: #eef2f7;
 }
 
-/* FLOATING EMOJIS */
-.emoji{
-  position:fixed;
-  font-size:24px;
-  animation:floatUp 12s linear infinite;
-  opacity:.8;
-  pointer-events:none;
-}
-@keyframes floatUp{
-  from{transform:translateY(100vh) scale(.8);opacity:0}
-  to{transform:translateY(-10vh) scale(1.2);opacity:1}
+.header {
+    background: linear-gradient(135deg,#0056b3,#007bff);
+    color: white;
+    text-align: center;
+    padding: 20px;
 }
 
-/* HEADER */
-header{
-  padding:60px 20px;
-  font-size:3rem;
-  font-weight:600;
-  color:#fff;
-  text-shadow:0 0 20px rgba(255,255,255,.6);
-  animation:glow 3s ease-in-out infinite alternate;
-}
-@keyframes glow{
-  from{text-shadow:0 0 10px #fff}
-  to{text-shadow:0 0 25px #ff4d6d}
+.header img {
+    max-height: 80px;
 }
 
-/* GLASS SECTION */
-.section{
-  background:rgba(255,255,255,.25);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  margin:30px auto;
-  padding:35px;
-  border-radius:25px;
-  width:85%;
-  max-width:850px;
-  box-shadow:0 15px 40px rgba(0,0,0,.15);
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
 }
 
-/* TEXT */
-.letter{
-  text-align:left;
-  white-space:pre-line;
-  font-size:1.15rem;
-  line-height:1.8;
-  color:#2d2d2d;
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
 }
 
-/* FUN BOX */
-.fun-box{
-  background:rgba(255,255,255,.35);
-  border-radius:20px;
-  padding:25px;
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 10px;
 }
 
-/* LIST */
-ul{list-style:none;padding:0;text-align:left}
-ul li{margin:10px 0}
-
-/* FOOTER */
-footer{
-  margin:40px 0;
-  font-weight:600;
-  font-size:1.2rem;
-  color:#fff;
-  text-shadow:0 0 15px rgba(255,255,255,.8);
+input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
-@media(max-width:600px){
-  header{font-size:2.2rem}
-  .letter{font-size:1rem}
+.btn {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
 }
+
+.primary { background: #007bff; color: white; }
+.success { background: #28a745; color: white; }
+.warning { background: #ffc107; color: black; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #007bff;
+    color: white;
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 5px;
+    color: white;
+    font-size: 12px;
+}
+.electronics { background: #6f42c1; }
+.consumable { background: #17a2b8; }
+.utility { background: #fd7e14; }
+
 </style>
 </head>
 
 <body>
 
-<!-- FLOATING EMOJIS -->
-<span class="emoji" style="left:5%">❤️</span>
-<span class="emoji" style="left:15%;animation-delay:2s">💖</span>
-<span class="emoji" style="left:30%;animation-delay:4s">💕</span>
-<span class="emoji" style="left:45%;animation-delay:1s">💘</span>
-<span class="emoji" style="left:60%;animation-delay:3s">❤️</span>
-<span class="emoji" style="left:75%;animation-delay:5s">💖</span>
-<span class="emoji" style="left:90%;animation-delay:6s">💕</span>
-
-<header>💖 Happy 1st Anniversary Kavya CJ 💖</header>
-
-<div class="section">
-<h2>Our Love Story ❤️</h2>
-<p class="letter">
-We met in JMP Hospital. I was the rude Public Relations Officer, and you were the innocent junior pharmacist who had no idea that the guy scolding you was actually falling for you faster than a nurse runs when someone shouts "sister!" 😳That day, a patient complained about the pharmacy and everyone pointed at you like you were the last bench student who didn’t do homework. You stood there… scared… confused… looking like a kitten who accidentally entered an operation theatre. And yes, I scolded you — but inside I was having a full love-at-first-sight meltdown. 
-
-I called you three times that day — THREE. Madam didn’t pick a single one. She didn’t even know it was me. Meanwhile, I was checking my call log like a heartbroken Romeo. 
-
-Slowly I started watching you every day (romantically… not CCTV level 👀). And when we finally talked, everything felt right — Then came the emotional earthquake — the day you asked to go home early. I said no, following rules like a strict Malayalam movie manager. But it got late… you had a long way… and you were on your period (which I didn’t know). You cried… and I felt like the villain in my own love story. 
-
-Next day you tried to talk to me, but I avoided you — which I regret more than skipping petrol when the tank is empty. You apologised in public and I still acted tough. then Akshay the electrician entered the chat. ⚡(that annoyed me so much you guys sit together laugh and talk it was like a disaster for me) 
-
-He also liked you. And I, being the strategic mastermind I am, had to gently *divert* him. Not hurt… just reroute… like a Google Maps update: “New destination → Anjana the pharmacist.” Mission successful without any shock hazards. (😎Biggest mistake of my life). 
-
-But slowly… I made my way back into your world. I created silly excuses to talk to you. I prepared topics like a student preparing last-minute notes before exams. You finally spoke to me again… and we became friends, laughing and talking for hours. 
-And then… on 11 January 2025 at 10:30 PM, I proposed. At 11 PM… you said YES. And my soul did a backflip. 
-
-Today marks one year of us — one year of love, chaos, guilt, laughter, diversions, phone calls, and destiny. of us. One year of love, laughter, dumb fights, awkward moments, and a LOT of memories.
-</p>
+<div class="header">
+    <img src="logo.png">
+    <h2>JMP Medical Centre, Piravom</h2>
+    <p>Stock Register System</p>
 </div>
 
-</div> <div class="section fun-box"> 
-<h3>✨ Funny Highlights of Our Journey ✨</h3> 
-<ul style="text-align:left; list-style: none; padding:0;"> 
-<li>💘 I fell in love while scolding you. Efficiency level: PRO max.</li> 
-<li>📞 You ignored my calls before it was cool.</li> 
-<li>😢 You cried once… and my guilt still haunts me like a ghost.</li>
- <li>⚡ Akshay got diverted like an electric current.</li>
- <li>📚 I prepared conversation topics like assignments for execution. </li>
- <li>💍 And finally… you said YES. Best moment ever.</li> 
-</ul>
+<div class="container">
+
+<!-- ADD STOCK -->
+<div class="card">
+<h3>Add Stock Item</h3>
+
+<div class="form-grid">
+<input id="itemName" placeholder="Item Name">
+<input id="department" placeholder="Department (ICU, Pharmacy)">
+<select id="category">
+<option>Consumable</option>
+<option>Electronics</option>
+<option>Utility</option>
+<option>Furniture</option>
+</select>
+
+<select id="type">
+<option>Moving</option>
+<option>Non-Moving</option>
+</select>
+
+<input id="serial" placeholder="Serial Number">
+<input id="warranty" placeholder="Warranty">
+<input id="quantity" type="number" placeholder="Quantity">
+<input id="date" type="date">
 </div>
 
-<div class="section">
-<h2>💌 For My Shuttumani 💌</h2>
-<p class="letter">
-My dearest Kavya,Happy Anniversary, my love. Every day with you feels like a story written with warmth, innocence, and mischief. You changed the way I see love—you made it softer, sweeter, more real.
-
-You are the calm to my chaos, the innocence to my attitude, the softness to my rough days. I love you for everything you are—your kindness, your strength, your laughter, your stubbornness, and the way you make my world feel complete.
-
-Thank you for choosing me. Thank you for loving me. And thank you… for picking up my call after months. ❤️🤣
-
-I love you endlessly, 
-    — Sharath (your appappi)❤️
-
-<button id="surpriseBtn" style="margin-top:20px;padding:12px 30px;border:none;border-radius:30px;font-size:1.1rem;background:#ff4d6d;color:#fff;cursor:pointer;box-shadow:0 10px 25px rgba(0,0,0,.2);">
-🎁 Surprise
-</button>
+<br>
+<button class="btn primary" onclick="addStock()">➕ Add Item</button>
 </div>
 
-<footer>💞 Forever us. Always. 💞</footer>
+<!-- REPORT -->
+<div class="card">
+<h3>Stock Report</h3>
 
-<!-- SURPRISE OVERLAY -->
-<div id="surpriseOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#000">
-  <img src="images/example.png" style="width:100%;height:100%;object-fit:contain">
-  <canvas id="fireworksCanvas" style="position:absolute;inset:0"></canvas>
-  <audio id="bgMusic" src="images/song.mp3" preload="auto"></audio>
+<select id="filterDept">
+<option value="All">All Departments</option>
+</select>
+
+<button class="btn success" onclick="loadReport()">Generate</button>
+<button class="btn warning" onclick="generatePDF()">Download PDF</button>
+
+<table id="table"></table>
+
+</div>
+
 </div>
 
 <script>
-const btn = document.getElementById("surpriseBtn");
-const overlay = document.getElementById("surpriseOverlay");
-const music = document.getElementById("bgMusic");
-const canvas = document.getElementById("fireworksCanvas");
-const ctx = canvas.getContext("2d");
 
-let particles = [];
-let running = false;
-let burstInterval;
-let dpr = window.devicePixelRatio || 1;
+let stock = JSON.parse(localStorage.getItem("stockData")) || [];
 
-function resizeCanvas(){
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  canvas.style.width = w + "px";
-  canvas.style.height = h + "px";
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+function saveData(){
+    localStorage.setItem("stockData", JSON.stringify(stock));
 }
 
-btn.onclick = () => {
-  overlay.style.display = "block";
-  resizeCanvas();
-  running = true;
-  music.play();
+// ADD STOCK
+function addStock(){
 
-  setTimeout(() => {
-    startContinuousFireworks();
-    animate();
-  }, 3000);
-};
+    let item = {
+        id: Date.now(),
+        name: itemName.value.trim(),
+        dept: department.value.trim(),
+        category: category.value,
+        type: type.value,
+        serial: serial.value.trim(),
+        warranty: warranty.value.trim(),
+        qty: quantity.value,
+        date: date.value
+    };
 
-music.onended = () => {
-  running = false;
-  clearInterval(burstInterval);
-  particles.length = 0;
-  overlay.style.display = "none";
-};
+    if(!item.name || !item.dept || !item.qty){
+        alert("Fill required fields");
+        return;
+    }
 
-function startContinuousFireworks(){
-  const burst = () => {
-    const cx = canvas.width / dpr / 2;
-    const cy = canvas.height / dpr / 2;
-    launch(0,0,cx,cy);
-    launch(canvas.width/dpr,0,cx,cy);
-    launch(0,canvas.height/dpr,cx,cy);
-    launch(canvas.width/dpr,canvas.height/dpr,cx,cy);
-  };
-  burst();
-  burstInterval = setInterval(burst, 800);
+    stock.push(item);
+    saveData();
+
+    clearInputs();
+    updateDepartments();
+    loadReport();
+
+    alert("Stock Added ✅");
 }
 
-function launch(x,y,tx,ty){
-  for(let i=0;i<80;i++){
-    const a = Math.atan2(ty-y,tx-x) + (Math.random()-.5);
-    const s = Math.random()*4 + 2;
-    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:120});
-  }
+// CLEAR INPUTS
+function clearInputs(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
 }
 
-function animate(){
-  if(!running) return;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(let i=particles.length-1;i>=0;i--){
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.l--;
-    ctx.fillStyle = "rgba(255,120,180,.8)";
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,2,0,Math.PI*2);
-    ctx.fill();
-    if(p.l<=0) particles.splice(i,1);
-  }
-  requestAnimationFrame(animate);
+// LOAD REPORT (FIXED)
+function loadReport(){
+
+    let filter = filterDept.value;
+    let table = document.getElementById("table");
+
+    table.innerHTML = `
+    <tr>
+    <th>Item</th><th>Dept</th><th>Category</th><th>Type</th>
+    <th>Serial</th><th>Warranty</th><th>Qty</th><th>Date</th><th>Action</th>
+    </tr>`;
+
+    let filtered = stock.filter(s => filter === "All" || s.dept === filter);
+
+    if(filtered.length === 0){
+        table.innerHTML += `<tr><td colspan="9">No Data Found</td></tr>`;
+        return;
+    }
+
+    filtered.forEach(s => {
+
+        let badgeClass = s.category.toLowerCase();
+
+        let row = table.insertRow();
+        row.innerHTML = `
+        <td>${s.name}</td>
+        <td>${s.dept}</td>
+        <td><span class="badge ${badgeClass}">${s.category}</span></td>
+        <td>${s.type}</td>
+        <td>${s.serial || "-"}</td>
+        <td>${s.warranty || "-"}</td>
+        <td>${s.qty}</td>
+        <td>${s.date || "-"}</td>
+        <td><button onclick="deleteItem(${s.id})">❌</button></td>
+        `;
+    });
 }
 
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener("orientationchange", resizeCanvas);
+// DELETE WITH PASSWORD 🔐
+function deleteItem(id){
+
+    let pass = prompt("Enter password to delete:");
+
+    if(pass !== "6napcdb88"){
+        alert("Wrong password ❌");
+        return;
+    }
+
+    stock = stock.filter(s => s.id !== id);
+    saveData();
+    loadReport();
+
+    alert("Deleted ✅");
+}
+
+// UPDATE DEPARTMENTS
+function updateDepartments(){
+
+    let select = document.getElementById("filterDept");
+    let depts = [...new Set(stock.map(s => s.dept))];
+
+    select.innerHTML = `<option value="All">All Departments</option>`;
+
+    depts.forEach(d=>{
+        let opt = document.createElement("option");
+        opt.value = d;
+        opt.text = d;
+        select.appendChild(opt);
+    });
+}
+
+// PDF FIXED
+async function generatePDF(){
+
+    if(stock.length === 0){
+        alert("No data to export");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let img = new Image();
+    img.src = "letterhead.jpg";
+
+    img.onload = function(){
+
+        let y = 40;
+
+        doc.addImage(img, "JPEG", 10, 5, 190, 30);
+
+        doc.setFontSize(14);
+        doc.text("Stock Report - JMP Medical Centre", 10, y);
+
+        y += 10;
+
+        stock.forEach((s,i)=>{
+
+            let line = `${i+1}. ${s.name} | ${s.dept} | ${s.category} | Qty:${s.qty}`;
+
+            if(s.serial) line += ` | SN:${s.serial}`;
+            if(s.warranty) line += ` | W:${s.warranty}`;
+
+            doc.text(line, 10, y);
+            y += 7;
+
+            if(y > 270){
+                doc.addPage();
+                doc.addImage(img, "JPEG", 10, 5, 190, 30);
+                y = 40;
+            }
+        });
+
+        doc.save("JMP_Stock_Report.pdf");
+    }
+}
+
+// INIT
+updateDepartments();
+loadReport();
+
 </script>
 
 </body>

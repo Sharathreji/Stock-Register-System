@@ -10,49 +10,54 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     background: #eef2f7;
 }
 
+/* HEADER */
 .header {
-    background: linear-gradient(135deg,#0056b3,#007bff);
+    background: #1f4e79;
     color: white;
+    padding: 15px;
     text-align: center;
-    padding: 20px;
 }
 
+/* LAYOUT */
 .container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
+    padding: 15px;
 }
 
+/* CARD */
 .card {
     background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* GRID */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
     gap: 10px;
 }
 
+/* INPUT */
 input, select {
-    padding: 10px;
-    border-radius: 8px;
+    padding: 8px;
+    border-radius: 6px;
     border: 1px solid #ccc;
 }
 
-.btn {
+/* BUTTON */
+button {
     padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
 }
@@ -61,13 +66,19 @@ input, select {
 .success { background: #28a745; color: white; }
 .warning { background: #ffc107; color: black; }
 
+/* TABLE */
+.table-wrapper {
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 800px;
 }
 
 th {
-    background: #007bff;
+    background: #1f4e79;
     color: white;
 }
 
@@ -75,7 +86,14 @@ th, td {
     padding: 8px;
     border: 1px solid #ddd;
     text-align: center;
+    word-break: break-word;
 }
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    table { font-size: 12px; }
+}
+
 </style>
 </head>
 
@@ -113,7 +131,7 @@ th, td {
 </div>
 
 <br>
-<button class="btn primary" onclick="addStock()">Add Item</button>
+<button class="primary" onclick="addStock()">Add Item</button>
 </div>
 
 <div class="card">
@@ -123,10 +141,12 @@ th, td {
 <option value="All">All Departments</option>
 </select>
 
-<button class="btn success" onclick="loadReport()">Generate</button>
-<button class="btn warning" onclick="generatePDF()">Download PDF</button>
+<button class="success" onclick="loadReport()">Generate</button>
+<button class="warning" onclick="generatePDF()">Download PDF</button>
 
+<div class="table-wrapper">
 <table id="table"></table>
+</div>
 
 </div>
 
@@ -140,7 +160,9 @@ function saveData(){
     localStorage.setItem("stockData", JSON.stringify(stock));
 }
 
+// ADD
 function addStock(){
+
     let item = {
         id: Date.now(),
         name: itemName.value,
@@ -167,6 +189,7 @@ function addStock(){
     loadReport();
 }
 
+// REPORT UI
 function loadReport(){
 
     let filter = filterDept.value;
@@ -202,6 +225,7 @@ function loadReport(){
     });
 }
 
+// DELETE
 function deleteItem(id){
     let pass = prompt("Enter password:");
     if(pass !== "6napcdb88"){
@@ -213,6 +237,7 @@ function deleteItem(id){
     loadReport();
 }
 
+// DEPT LIST
 function updateDepartments(){
     let select = document.getElementById("filterDept");
     let depts = [...new Set(stock.map(s=>s.dept))];
@@ -227,108 +252,99 @@ function updateDepartments(){
     });
 }
 
+// PDF (FILTERED + PERFECT TABLE)
 async function generatePDF(){
-
-    if(stock.length===0){
-        alert("No data");
-        return;
-    }
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF("l", "mm", "a4");
+
+    let filter = filterDept.value;
+    let filtered = stock.filter(s => filter==="All" || s.dept===filter);
+
+    if(filtered.length===0){
+        alert("No data");
+        return;
+    }
 
     let img = new Image();
     img.src = "images/letterhead.jpg";
 
     img.onload = function(){
 
-        const pageWidth = 297;
-        const margin = 10;
-        const usableWidth = pageWidth - margin * 2;
-
         let y = 45;
 
-        function drawHeader(){
-            doc.addImage(img, "JPEG", 10, 5, 277, 30);
+        function header(){
+            doc.addImage(img,"JPEG",10,5,277,30);
             doc.setFontSize(12);
-            doc.text("Stock Report - JMP Medical Centre", 10, 40);
+            doc.text("Stock Report - JMP Medical Centre",10,40);
         }
 
-        drawHeader();
+        header();
 
-        // Balanced column widths (fits A4 perfectly)
-        const colWidths = [45, 30, 30, 30, 35, 35, 15, 25];
         const headers = ["Item","Dept","Category","Type","Serial","Warranty","Qty","Date"];
+        const colWidths = [50,35,35,35,40,40,20,30];
 
-        function splitText(text, width){
-            return doc.splitTextToSize(String(text), width - 2);
+        function splitText(t,w){
+            return doc.splitTextToSize(String(t), w-2);
         }
 
-        function drawRow(row, yPos){
+        function drawRow(row,yPos){
 
-            let x = margin;
-            let maxHeight = 0;
+            let x=10;
+            let maxH=0;
 
-            let cellTexts = row.map((cell, i) => {
-                let lines = splitText(cell, colWidths[i]);
-                maxHeight = Math.max(maxHeight, lines.length * 5);
-                return lines;
+            let lines=row.map((c,i)=>{
+                let l=splitText(c,colWidths[i]);
+                maxH=Math.max(maxH,l.length*5);
+                return l;
             });
 
-            cellTexts.forEach((lines, i) => {
-                doc.rect(x, yPos, colWidths[i], maxHeight + 4);
-
-                lines.forEach((line, j) => {
-                    doc.text(line, x + 2, yPos + 4 + j * 5);
+            lines.forEach((cell,i)=>{
+                doc.rect(x,yPos,colWidths[i],maxH+4);
+                cell.forEach((line,j)=>{
+                    doc.text(line,x+2,yPos+4+j*5);
                 });
-
-                x += colWidths[i];
+                x+=colWidths[i];
             });
 
-            return maxHeight + 4;
+            return maxH+4;
         }
 
-        doc.setFont(undefined, "bold");
-        let rowHeight = drawRow(headers, y);
-        doc.setFont(undefined, "normal");
+        doc.setFont(undefined,"bold");
+        let h=drawRow(headers,y);
+        doc.setFont(undefined,"normal");
+        y+=h;
 
-        y += rowHeight;
+        filtered.forEach(s=>{
 
-        stock.forEach(s => {
-
-            let row = [
-                s.name,
-                s.dept,
-                s.category,
-                s.type,
-                s.serial || "-",
-                s.warranty || "-",
-                s.qty,
-                s.date || "-"
+            let row=[
+                s.name,s.dept,s.category,s.type,
+                s.serial||"-",s.warranty||"-",s.qty,s.date||"-"
             ];
 
-            let neededHeight = drawRow(row, y);
+            let h=drawRow(row,y);
 
-            if(y + neededHeight > 200){
+            if(y+h>190){
                 doc.addPage();
-                drawHeader();
-                y = 45;
+                header();
+                y=45;
 
-                doc.setFont(undefined, "bold");
-                drawRow(headers, y);
-                doc.setFont(undefined, "normal");
+                doc.setFont(undefined,"bold");
+                drawRow(headers,y);
+                doc.setFont(undefined,"normal");
 
-                y += 10;
-                neededHeight = drawRow(row, y);
+                y+=10;
+                h=drawRow(row,y);
             }
 
-            y += neededHeight;
+            y+=h;
         });
 
         doc.save("JMP_Stock_Report.pdf");
     }
 }
 
+// INIT
 updateDepartments();
 loadReport();
 

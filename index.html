@@ -4,112 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>JMP Medical Centre - Stock System</title>
+<title>JMP Medical Centre - Stock Register</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    background: #eef2f7;
-}
+body { font-family: 'Poppins'; margin:0; background:#eef2f7; }
 
-/* HEADER */
-.header {
-    background: #1f4e79;
-    color: white;
-    padding: 12px;
-}
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-.logo { height: 55px; }
+.header { background:#1f4e79; color:white; padding:12px; text-align:center; }
+.logo { height:50px; }
 
-/* LAYOUT */
-.container { padding: 15px; }
+.container { padding:15px; }
 
-/* CARD */
 .card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* FORM */
 .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-    gap: 10px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:10px;
 }
 
 input, select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 
-/* BUTTON */
 button {
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
 }
 
-.primary { background: #007bff; color: white; }
-.success { background: #28a745; color: white; }
-.warning { background: #ffc107; color: black; }
+.primary { background:#007bff; color:white; }
+.success { background:#28a745; color:white; }
+.warning { background:#ffc107; color:black; }
 
-/* TABLE */
 .table-wrapper {
-    max-height: 400px;
-    overflow: auto;
+    max-height:400px;
+    overflow:auto;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+table { width:100%; border-collapse:collapse; }
 
 th {
-    background: #1f4e79;
-    color: white;
-    position: sticky;
-    top: 0;
+    background:#1f4e79;
+    color:white;
+    position:sticky;
+    top:0;
 }
 
 th, td {
-    padding: 6px;
-    border: 1px solid #ddd;
-    text-align: center;
+    padding:6px;
+    border:1px solid #ddd;
+    text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-    <div class="header-content">
-        <img src="images/logo.png" class="logo">
-        <div>
-            <h2>JMP Medical Centre</h2>
-            <p>Stock Register</p>
-        </div>
-    </div>
+    <img src="images/logo.png" class="logo">
+    <h2>JMP Medical Centre</h2>
+    <p>Stock Register System</p>
 </div>
 
 <div class="container">
 
-<!-- ADD -->
 <div class="card">
 <h3>Add Stock</h3>
 
@@ -120,7 +91,6 @@ th, td {
 <option>Consumable</option>
 <option>Electronics</option>
 <option>Utility</option>
-<option>Furniture</option>
 </select>
 
 <select id="type">
@@ -136,16 +106,17 @@ th, td {
 
 <br>
 <button class="primary" onclick="addStock()">Add</button>
+<button class="success" onclick="exportData()">Export Data</button>
+<input type="file" onchange="importData(event)">
 </div>
 
-<!-- REPORT -->
 <div class="card">
 <h3>Stock Report</h3>
 
 <select id="filterDept"></select>
 
 <button class="success" onclick="loadReport()">Generate</button>
-<button class="warning" onclick="generatePDF()">Download PDF</button>
+<button class="warning" onclick="generatePDF()">PDF</button>
 
 <div class="table-wrapper">
 <table id="table"></table>
@@ -157,11 +128,8 @@ th, td {
 
 <script>
 
-let stock = JSON.parse(localStorage.getItem("stockData")) || [];
-
-function saveData(){
-    localStorage.setItem("stockData", JSON.stringify(stock));
-}
+// 🔴 DATA STORED IN CODE
+let stock = [];
 
 // ADD
 function addStock(){
@@ -184,7 +152,6 @@ function addStock(){
     }
 
     stock.push(item);
-    saveData();
 
     document.querySelectorAll("input").forEach(i=>i.value="");
 
@@ -192,22 +159,7 @@ function addStock(){
     loadReport();
 }
 
-// DEPARTMENT LIST
-function updateDepartments(){
-    let select = document.getElementById("filterDept");
-    let depts = [...new Set(stock.map(s=>s.dept))];
-
-    select.innerHTML = `<option value="All">All Departments</option>`;
-
-    depts.forEach(d=>{
-        let opt=document.createElement("option");
-        opt.value=d;
-        opt.text=d;
-        select.appendChild(opt);
-    });
-}
-
-// FAST RENDER
+// REPORT
 function loadReport(){
 
     let table = document.getElementById("table");
@@ -222,42 +174,25 @@ function loadReport(){
 
     let filtered = stock.filter(s => filter==="All" || s.dept===filter);
 
-    let chunk = 200;
-    let i = 0;
-
-    function renderChunk(){
-
-        let fragment = document.createDocumentFragment();
-
-        for(let j=0;j<chunk && i<filtered.length;j++,i++){
-
-            let s = filtered[i];
-
-            let row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${s.name}</td>
-            <td>${s.dept}</td>
-            <td>${s.category}</td>
-            <td>${s.type}</td>
-            <td>${s.serial||"-"}</td>
-            <td>${s.warranty||"-"}</td>
-            <td>${s.qty}</td>
-            <td>${s.date||"-"}</td>
-            <td><button onclick="deleteItem(${s.id})">❌</button></td>
-            `;
-
-            fragment.appendChild(row);
-        }
-
-        table.appendChild(fragment);
-
-        if(i < filtered.length){
-            requestAnimationFrame(renderChunk);
-        }
+    if(filtered.length===0){
+        table.innerHTML += `<tr><td colspan="9">No Data</td></tr>`;
+        return;
     }
 
-    renderChunk();
+    filtered.forEach(s=>{
+        let row = table.insertRow();
+        row.innerHTML = `
+        <td>${s.name}</td>
+        <td>${s.dept}</td>
+        <td>${s.category}</td>
+        <td>${s.type}</td>
+        <td>${s.serial||"-"}</td>
+        <td>${s.warranty||"-"}</td>
+        <td>${s.qty}</td>
+        <td>${s.date||"-"}</td>
+        <td><button onclick="deleteItem(${s.id})">❌</button></td>
+        `;
+    });
 }
 
 // DELETE
@@ -268,23 +203,57 @@ function deleteItem(id){
         return;
     }
     stock = stock.filter(s=>s.id!==id);
-    saveData();
     loadReport();
 }
 
+// DEPARTMENT
+function updateDepartments(){
+    let select = document.getElementById("filterDept");
+    let depts = [...new Set(stock.map(s=>s.dept))];
+
+    select.innerHTML = `<option value="All">All Departments</option>`;
+
+    depts.forEach(d=>{
+        let opt=document.createElement("option");
+        opt.value=d;
+        opt.text=d;
+        select.appendChild(opt);
+    });
+}
+
+// EXPORT
+function exportData(){
+    let blob = new Blob([JSON.stringify(stock, null, 2)], {type:"application/json"});
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "stock_data.json";
+    a.click();
+}
+
+// IMPORT
+function importData(e){
+    let file = e.target.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(){
+        stock = JSON.parse(reader.result);
+        updateDepartments();
+        loadReport();
+    };
+
+    reader.readAsText(file);
+}
+
 // PDF LANDSCAPE
-async function generatePDF(){
+function generatePDF(){
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("l", "mm", "a4");
+    const doc = new jsPDF("l","mm","a4");
 
     let filter = filterDept.value;
     let data = stock.filter(s => filter==="All" || s.dept===filter);
-
-    if(data.length===0){
-        alert("No data");
-        return;
-    }
 
     let img = new Image();
     img.src = "images/letterhead.jpg";
@@ -303,11 +272,7 @@ async function generatePDF(){
 
         doc.setFontSize(9);
 
-        const headers = [
-            "Item","Department","Category","Type",
-            "Serial","Warranty","Qty","Date"
-        ];
-
+        const headers = ["Item","Dept","Category","Type","Serial","Warranty","Qty","Date"];
         const colWidths = [70,40,35,30,45,35,20,30];
 
         function splitText(t,w){
@@ -342,11 +307,7 @@ async function generatePDF(){
         y+=h;
 
         data.forEach(s=>{
-
-            let row=[
-                s.name,s.dept,s.category,s.type,
-                s.serial,s.warranty,s.qty,s.date
-            ];
+            let row=[s.name,s.dept,s.category,s.type,s.serial,s.warranty,s.qty,s.date];
 
             let h=drawRow(row,y);
 
@@ -354,19 +315,14 @@ async function generatePDF(){
                 doc.addPage();
                 header();
                 y=45;
-
-                doc.setFont(undefined,"bold");
                 drawRow(headers,y);
-                doc.setFont(undefined,"normal");
-
                 y+=10;
-                h=drawRow(row,y);
             }
 
             y+=h;
         });
 
-        doc.save("JMP_Stock_Report.pdf");
+        doc.save("Stock_Report.pdf");
     }
 }
 

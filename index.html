@@ -23,10 +23,6 @@ body {
     padding: 20px;
 }
 
-.header img {
-    max-height: 80px;
-}
-
 .container {
     max-width: 1200px;
     margin: auto;
@@ -80,37 +76,25 @@ th, td {
     border: 1px solid #ddd;
     text-align: center;
 }
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 5px;
-    color: white;
-    font-size: 12px;
-}
-.electronics { background: #6f42c1; }
-.consumable { background: #17a2b8; }
-.utility { background: #fd7e14; }
-
 </style>
 </head>
 
 <body>
 
 <div class="header">
-    <img src="images/logo.png">
     <h2>JMP Medical Centre, Piravom</h2>
     <p>Stock Register System</p>
 </div>
 
 <div class="container">
 
-<!-- ADD STOCK -->
+<!-- ENTRY -->
 <div class="card">
-<h3>Add Stock Item</h3>
+<h3>Add Stock</h3>
 
 <div class="form-grid">
 <input id="itemName" placeholder="Item Name">
-<input id="department" placeholder="Department (ICU, Pharmacy)">
+<input id="department" placeholder="Department">
 <select id="category">
 <option>Consumable</option>
 <option>Electronics</option>
@@ -130,7 +114,7 @@ th, td {
 </div>
 
 <br>
-<button class="btn primary" onclick="addStock()">➕ Add Item</button>
+<button class="btn primary" onclick="addStock()">Add Item</button>
 </div>
 
 <!-- REPORT -->
@@ -158,17 +142,17 @@ function saveData(){
     localStorage.setItem("stockData", JSON.stringify(stock));
 }
 
-// ADD STOCK
+// ADD
 function addStock(){
 
     let item = {
         id: Date.now(),
-        name: itemName.value.trim(),
-        dept: department.value.trim(),
+        name: itemName.value,
+        dept: department.value,
         category: category.value,
         type: type.value,
-        serial: serial.value.trim(),
-        warranty: warranty.value.trim(),
+        serial: serial.value,
+        warranty: warranty.value,
         qty: quantity.value,
         date: date.value
     };
@@ -181,19 +165,13 @@ function addStock(){
     stock.push(item);
     saveData();
 
-    clearInputs();
+    document.querySelectorAll("input").forEach(i=>i.value="");
+
     updateDepartments();
     loadReport();
-
-    alert("Stock Added ✅");
 }
 
-// CLEAR INPUTS
-function clearInputs(){
-    document.querySelectorAll("input").forEach(i=>i.value="");
-}
-
-// LOAD REPORT (FIXED)
+// REPORT TABLE
 function loadReport(){
 
     let filter = filterDept.value;
@@ -201,79 +179,77 @@ function loadReport(){
 
     table.innerHTML = `
     <tr>
-    <th>Item</th><th>Dept</th><th>Category</th><th>Type</th>
-    <th>Serial</th><th>Warranty</th><th>Qty</th><th>Date</th><th>Action</th>
+    <th>Item</th><th>Dept</th><th>Category</th>
+    <th>Type</th><th>Serial</th><th>Warranty</th>
+    <th>Qty</th><th>Date</th><th>Action</th>
     </tr>`;
 
-    let filtered = stock.filter(s => filter === "All" || s.dept === filter);
+    let filtered = stock.filter(s => filter==="All" || s.dept===filter);
 
-    if(filtered.length === 0){
-        table.innerHTML += `<tr><td colspan="9">No Data Found</td></tr>`;
+    if(filtered.length===0){
+        table.innerHTML += `<tr><td colspan="9">No Data</td></tr>`;
         return;
     }
 
-    filtered.forEach(s => {
-
-        let badgeClass = s.category.toLowerCase();
-
+    filtered.forEach(s=>{
         let row = table.insertRow();
         row.innerHTML = `
         <td>${s.name}</td>
         <td>${s.dept}</td>
-        <td><span class="badge ${badgeClass}">${s.category}</span></td>
+        <td>${s.category}</td>
         <td>${s.type}</td>
-        <td>${s.serial || "-"}</td>
-        <td>${s.warranty || "-"}</td>
+        <td>${s.serial||"-"}</td>
+        <td>${s.warranty||"-"}</td>
         <td>${s.qty}</td>
-        <td>${s.date || "-"}</td>
+        <td>${s.date||"-"}</td>
         <td><button onclick="deleteItem(${s.id})">❌</button></td>
         `;
     });
 }
 
-// DELETE WITH PASSWORD 🔐
+// DELETE PASSWORD
 function deleteItem(id){
 
-    let pass = prompt("Enter password to delete:");
+    let pass = prompt("Enter password:");
 
     if(pass !== "6napcdb88"){
-        alert("Wrong password ❌");
+        alert("Wrong password");
         return;
     }
 
-    stock = stock.filter(s => s.id !== id);
+    stock = stock.filter(s=>s.id!==id);
     saveData();
     loadReport();
-
-    alert("Deleted ✅");
 }
 
-// UPDATE DEPARTMENTS
+// DEPARTMENTS
 function updateDepartments(){
 
     let select = document.getElementById("filterDept");
-    let depts = [...new Set(stock.map(s => s.dept))];
+    let depts = [...new Set(stock.map(s=>s.dept))];
 
     select.innerHTML = `<option value="All">All Departments</option>`;
 
     depts.forEach(d=>{
-        let opt = document.createElement("option");
-        opt.value = d;
-        opt.text = d;
+        let opt=document.createElement("option");
+        opt.value=d;
+        opt.text=d;
         select.appendChild(opt);
     });
 }
 
-// PDF FIXED
+// PDF TABLE (FULL PAGE)
 async function generatePDF(){
 
-    if(stock.length === 0){
-        alert("No data to export");
+    if(stock.length===0){
+        alert("No data");
         return;
     }
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+
+    // LANDSCAPE
+    const doc = new jsPDF("l", "mm", "a4");
 
     let img = new Image();
     img.src = "images/letterhead.jpg";
@@ -282,28 +258,62 @@ async function generatePDF(){
 
         let y = 40;
 
-        doc.addImage(img, "JPEG", 10, 5, 190, 30);
+        function drawHeader(){
+            doc.addImage(img, "JPEG", 10, 5, 277, 30);
 
-        doc.setFontSize(14);
-        doc.text("Stock Report - JMP Medical Centre", 10, y);
+            doc.setFontSize(14);
+            doc.text("Stock Report - JMP Medical Centre", 10, 40);
+        }
 
-        y += 10;
+        drawHeader();
 
-        stock.forEach((s,i)=>{
+        y = 50;
 
-            let line = `${i+1}. ${s.name} | ${s.dept} | ${s.category} | Qty:${s.qty}`;
+        const headers = ["Item","Dept","Category","Type","Serial","Warranty","Qty","Date"];
+        const colWidths = [50,40,40,40,40,40,20,30];
 
-            if(s.serial) line += ` | SN:${s.serial}`;
-            if(s.warranty) line += ` | W:${s.warranty}`;
+        function drawRow(row,yPos){
+            let x=10;
+            row.forEach((cell,i)=>{
+                doc.rect(x,yPos,colWidths[i],8);
+                doc.text(String(cell), x+2, yPos+5);
+                x+=colWidths[i];
+            });
+        }
 
-            doc.text(line, 10, y);
-            y += 7;
+        doc.setFont(undefined,"bold");
+        drawRow(headers,y);
+        doc.setFont(undefined,"normal");
 
-            if(y > 270){
+        y+=8;
+
+        stock.forEach((s)=>{
+
+            let row=[
+                s.name,
+                s.dept,
+                s.category,
+                s.type,
+                s.serial||"-",
+                s.warranty||"-",
+                s.qty,
+                s.date||"-"
+            ];
+
+            if(y>180){
                 doc.addPage();
-                doc.addImage(img, "JPEG", 10, 5, 190, 30);
-                y = 40;
+                drawHeader();
+                y=50;
+
+                doc.setFont(undefined,"bold");
+                drawRow(headers,y);
+                doc.setFont(undefined,"normal");
+
+                y+=8;
             }
+
+            drawRow(row,y);
+            y+=8;
         });
 
         doc.save("JMP_Stock_Report.pdf");
